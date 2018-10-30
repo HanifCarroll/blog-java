@@ -1,35 +1,36 @@
 package com.hanifcarroll.blog.post;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.hanifcarroll.blog.user.User;
 import javax.persistence.*;
 
-
 @Entity
-@Table(name="POST")
 public class Post {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="ID")
-    private long id;
-
-    @Column(name="Title")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     private String title;
-
-    @Column(name="Content")
     private String body;
+
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    @JsonIgnoreProperties("posts")
+    private User author;
 
     public Post() {}
 
-    public Post(String title, String body) {
+    public Post(String title, String body, User author) {
         this.title = title;
         this.body = body;
+        this.author = author;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -47,6 +48,14 @@ public class Post {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     @Override

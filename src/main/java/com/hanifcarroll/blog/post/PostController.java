@@ -1,71 +1,67 @@
 package com.hanifcarroll.blog.post;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import com.hanifcarroll.blog.user.User;
+import com.hanifcarroll.blog.user.UserRepository;
 import org.springframework.web.bind.annotation.*;
-
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    public PostController(PostRepository postRepository) {
+    public PostController(PostRepository postRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
 
-    @PostMapping("/")
-    public Post createPost(@RequestParam("title") String title, @RequestParam("body") String body) {
-        Post post = new Post(title, body);
-        postRepository.save(post);
-        return post;
+    @PostMapping({"", "/"})
+    public Post createPost(
+            @RequestParam("title") String title,
+            @RequestParam("body") String body,
+            @RequestParam("userId") Long userId
+            ) {
+
+        User author = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        Post newPost = new Post(title, body, author);
+        postRepository.save(newPost);
+
+        return newPost;
     }
 
-    @GetMapping("/")
+    @GetMapping({"", "/"})
     public List<Post> getPosts() {
         return postRepository.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity getPost(@PathVariable("id") Long id) {
-        Optional<Post> post = postRepository.findById(id);
-        return post
-                .map(foundPost -> ResponseEntity.ok().body(foundPost))
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping({"/{id}", "/{id}/"})
+    public Post getPost(@PathVariable("id") Long id) {
+
+        return postRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity editPost(@PathVariable("id") Long id,
+    @PutMapping({"/{id}", "/{id}/"})
+    public Post editPost(@PathVariable("id") Long id,
                          @RequestParam("title") String title,
                          @RequestParam("body") String body
     ) {
-        Optional<Post> post = postRepository.findById(id);
+        Post postToUpdate = postRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
-        if (!post.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
+        postToUpdate.setTitle(title);
+        postToUpdate.setBody(body);
+        postRepository.save(postToUpdate);
 
-        Post foundPost = post.get();
-        foundPost.setTitle(title);
-        foundPost.setBody(body);
-        postRepository.save(foundPost);
-
-        return ResponseEntity.ok(foundPost);
+        return postToUpdate;
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity deletePost(@PathVariable("id") Long id) {
-        Optional<Post> post = postRepository.findById(id);
+    @DeleteMapping({"/{id}", "/{id}/"})
+    public String deletePost(@PathVariable("id") Long id) {
+        Post postToDelete = postRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
-        if (!post.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        postRepository.deleteById(id);
-        return ResponseEntity.ok("Post deleted");
+        postRepository.delete(postToDelete);
+        return "Post deleted.";
     }
 
 }
