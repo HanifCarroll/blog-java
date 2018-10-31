@@ -3,6 +3,7 @@ package com.hanifcarroll.blog.post;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hanifcarroll.blog.user.User;
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 public class Post {
@@ -13,10 +14,18 @@ public class Post {
     private String title;
     private String body;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
     @ManyToOne
     @JoinColumn(name="user_id")
     @JsonIgnoreProperties("posts")
     private User author;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+    }
 
     public Post() {}
 
@@ -56,6 +65,14 @@ public class Post {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override

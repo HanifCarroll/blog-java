@@ -16,6 +16,7 @@ public class User {
     public String username;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "author")
+    @OrderBy("createdAt DESC")
     public Set<Post> posts = new HashSet<>();
 
     public User() {

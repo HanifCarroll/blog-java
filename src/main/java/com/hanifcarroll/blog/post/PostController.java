@@ -33,7 +33,8 @@ public class PostController {
 
     @GetMapping({"", "/"})
     public List<Post> getPosts() {
-        return postRepository.findAll();
+
+        return postRepository.findAllByOrderByCreatedAtDesc();
     }
 
     @GetMapping({"/{id}", "/{id}/"})

@@ -1,8 +1,10 @@
 package com.hanifcarroll.blog.user;
 
+import com.hanifcarroll.blog.post.Post;
 import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/users")
@@ -34,6 +36,14 @@ public class UserController {
 
         return userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
+
+    @GetMapping({"/{id}/posts", "/{id}/posts/"})
+    public Set<Post> getUSerPosts(@PathVariable("id") Long id) {
+
+        User user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return user.getPosts();
+    }
+
 
     @PutMapping({"/{id}", "/{id}/"})
     public User editUser(@PathVariable("id") Long id, @RequestParam("username") String username) {
