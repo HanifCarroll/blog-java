@@ -1,5 +1,6 @@
 package com.hanifcarroll.blog.user;
 
+import com.hanifcarroll.blog.comment.Comment;
 import com.hanifcarroll.blog.post.Post;
 
 import javax.persistence.*;
@@ -8,16 +9,25 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@Table(name = "user")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "user_id")
     public Long id;
+
+    @Column(name = "username")
     public String username;
 
+    @Column(name = "created_at")
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "author")
     @OrderBy("createdAt DESC")
     public Set<Post> posts = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "author")
+    @OrderBy("createdAt DESC")
+    public Set<Comment> comments = new HashSet<>();
 
     public User() {
     }
@@ -53,6 +63,14 @@ public class User {
 
     public void setPosts(Set<Post> posts) {
         this.posts = posts;
+    }
+
+    public Set<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
     }
 
     @Override

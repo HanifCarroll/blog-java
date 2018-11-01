@@ -1,31 +1,44 @@
 package com.hanifcarroll.blog.post;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hanifcarroll.blog.comment.Comment;
 import com.hanifcarroll.blog.user.User;
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
+@Table(name = "post")
 public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "post_id")
     private Long id;
+
+    @Column(name = "title")
     private String title;
+
+    @Column(name = "body")
     private String body;
 
+    @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at")
     private Date createdAt;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
-    @JsonIgnoreProperties("posts")
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @NotNull
+    @JsonIgnore
     private User author;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = new Date();
-    }
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "post")
+    private Set<Comment> comments = new HashSet<>();
 
     public Post() {}
 
@@ -65,6 +78,14 @@ public class Post {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public Set<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
     }
 
     public Date getCreatedAt() {

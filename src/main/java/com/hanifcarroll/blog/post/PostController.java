@@ -3,6 +3,7 @@ package com.hanifcarroll.blog.post;
 import com.hanifcarroll.blog.user.User;
 import com.hanifcarroll.blog.user.UserRepository;
 import org.springframework.web.bind.annotation.*;
+
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
@@ -21,10 +22,10 @@ public class PostController {
     public Post createPost(
             @RequestParam("title") String title,
             @RequestParam("body") String body,
-            @RequestParam("userId") Long userId
+            @RequestParam("authorId") Long authorId
             ) {
 
-        User author = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        User author = userRepository.findById(authorId).orElseThrow(EntityNotFoundException::new);
         Post newPost = new Post(title, body, author);
         postRepository.save(newPost);
 
