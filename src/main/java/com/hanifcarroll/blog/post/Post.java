@@ -1,24 +1,18 @@
 package com.hanifcarroll.blog.post;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.hanifcarroll.blog.BaseEntity;
 import com.hanifcarroll.blog.comment.Comment;
 import com.hanifcarroll.blog.user.User;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "post")
-public class Post {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "post_id")
-    private Long id;
+public class Post extends BaseEntity {
 
     @Column(name = "title")
     private String title;
@@ -26,15 +20,10 @@ public class Post {
     @Column(name = "body")
     private String body;
 
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at")
-    private Date createdAt;
-
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     @NotNull
-    @JsonIgnore
+    @JsonIgnoreProperties({"posts", "comments", "createdAt", "updatedAt"})
     private User author;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "post")
@@ -46,14 +35,6 @@ public class Post {
         this.title = title;
         this.body = body;
         this.author = author;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getTitle() {
@@ -88,18 +69,9 @@ public class Post {
         this.comments = comments;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     @Override
     public String toString() {
         return "Post{" +
-                "id=" + id +
                 ", title='" + title + '\'' +
                 ", body='" + body + '\'' +
                 '}';
