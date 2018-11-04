@@ -5,6 +5,8 @@ import com.hanifcarroll.blog.comment.Comment;
 import com.hanifcarroll.blog.post.Post;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -14,18 +16,20 @@ import java.util.Set;
 public class User extends BaseEntity {
 
     @Column(name = "username")
-    public String username;
+    @NotBlank
+    @Size(min = 4, max = 20, message = "Username must be between 4 and 20 characters.")
+    private String username;
 
     @Column(name = "created_at")
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "author")
     @OrderBy("createdAt DESC")
-    public Set<Post> posts = new HashSet<>();
+    private Set<Post> posts = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "author")
     @OrderBy("createdAt DESC")
-    public Set<Comment> comments = new HashSet<>();
+    private Set<Comment> comments = new HashSet<>();
 
-    public User() {
+    User() {
     }
 
     public User(String username) {
@@ -42,6 +46,8 @@ public class User extends BaseEntity {
     }
 
     public void setUsername(String username) {
+        username = username.trim().replaceAll(" ", "");
+
         this.username = username;
     }
 
