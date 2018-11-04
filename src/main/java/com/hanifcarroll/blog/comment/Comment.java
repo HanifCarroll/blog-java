@@ -1,7 +1,6 @@
 package com.hanifcarroll.blog.comment;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hanifcarroll.blog.BaseEntity;
 import com.hanifcarroll.blog.post.Post;
 import com.hanifcarroll.blog.user.User;
@@ -25,13 +24,14 @@ public class Comment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="post_id", referencedColumnName = "id")
     @NotNull
-    @JsonIgnoreProperties(value = {"comments"})
+//    @JsonIgnoreProperties(value = {"comments"})
+    @JsonIgnore
     private Post post;
 
     public Comment() {
     }
 
-    public Comment(String text, User author, Post post) {
+    public Comment(String text, User author, Post post)  {
         this.text = text;
         this.author = author;
         this.post = post;
