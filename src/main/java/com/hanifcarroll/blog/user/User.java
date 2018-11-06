@@ -20,6 +20,8 @@ public class User extends BaseEntity {
     @Size(min = 4, max = 20, message = "Username must be between 4 and 20 characters.")
     private String username;
 
+    private String password;
+
     @Column(name = "created_at")
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "author")
     @OrderBy("createdAt DESC")
@@ -32,13 +34,9 @@ public class User extends BaseEntity {
     User() {
     }
 
-    public User(String username) {
+    public User(String username, String password) {
         this.username = username;
-    }
-
-    public User(String username, Set<Post> posts) {
-        this.username = username;
-        this.posts = posts;
+        this.password = password;
     }
 
     public String getUsername() {
@@ -86,5 +84,13 @@ public class User extends BaseEntity {
                 ", username='" + username + '\'' +
                 ", posts=" + posts +
                 '}';
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
